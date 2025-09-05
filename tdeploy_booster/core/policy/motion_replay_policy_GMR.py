@@ -10,7 +10,10 @@ from .base_policy import Policy
 class GMRMotionData:
     dof_poses: np.ndarray
     fps: float
-    max_time: float
+    
+    @property
+    def max_time(self):
+        return self.dof_poses.shape[0] / self.fps
     
     @property
     def dt(self):
@@ -32,7 +35,13 @@ class GMRMotionData:
         local_body_pos = np.array(data["local_body_pos"])
             
         return cls(
-            dof_pos, fps, dof_pos.shape[0] / fps
+            dof_pos, fps
+        )
+        
+    @classmethod
+    def from_list(cls, data: list):
+        return cls(
+            np.array(data), 10
         )
         
     def dof_pos_at_time(self, time: float):
@@ -41,15 +50,17 @@ class GMRMotionData:
         blend = frame - idx_l
         tar_dof_pos:np.ndarray = self.dof_poses[idx_l] * blend + self.dof_poses[idx_u] * (1 - blend)
         tar_dof_pos = tar_dof_pos.reshape(-1)
-        return tar_dof_pos[MUJOCO2REAL_CAST]
+        return tar_dof_pos # [MUJOCO2REAL_CAST]
     
+motion_data = np.ones(500, 22) * 0.1
 
 class MotionReplayPolicy(Policy):
     
     def __init__(self, cfg):
         super().__init__(cfg)
         self.reset()
-        self.data = GMRMotionData.from_file("./target.pkl")
+        # self.data = GMRMotionData.from_file("./target.pkl")
+        self.data = GMRMotionData.from_list(motion_data)
         
     def reset(self):
         self.curr_time = 0
