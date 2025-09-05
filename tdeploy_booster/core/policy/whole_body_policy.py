@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from .policy_base import Policy
+from .base_policy import Policy
 
 class WholeBodyPolicy(Policy):
     

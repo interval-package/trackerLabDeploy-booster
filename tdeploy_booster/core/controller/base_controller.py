@@ -124,6 +124,20 @@ class Controller:
         end_time = time.perf_counter()
         self.logger.debug(f"Change mode took {(end_time - send_time)*1000:.4f} ms")
         
+    def start_rl_gait_conditionally(self):
+        print(f"{self.remoteControlService.get_rl_gait_operation_hint()}")
+        while True:
+            if self.remoteControlService.start_rl_gait():
+                break
+            time.sleep(0.1)
+        create_first_frame_rl_cmd(self.low_cmd, self.cfg)
+        self._send_cmd(self.low_cmd)
+        self.next_inference_time = self.timer.get_time()
+        self.next_publish_time = self.timer.get_time()
+        self.publish_runner = threading.Thread(target=self._publish_cmd)
+        self.publish_runner.daemon = True
+        self.publish_runner.start()
+        print(f"{self.remoteControlService.get_operation_hint()}")
         
     def run():
         ...

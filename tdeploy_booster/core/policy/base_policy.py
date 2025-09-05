@@ -1,17 +1,15 @@
 import numpy as np
 import torch
 
-
 class Policy:
-    def __init__(self, cfg):
-        try:
-            self.cfg = cfg
-            self.policy = torch.jit.load(self.cfg["policy"]["policy_path"])
-            self.policy.eval()
-        except Exception as e:
-            print(f"Failed to load policy: {e}")
-            raise
+    def __init__(self, cfg: dict):
+        self.cfg = cfg
         self._init_inference_variables()
+        self.load_policy()
+
+    def load_policy(self):
+        self.policy = torch.jit.load(self.cfg["policy"]["policy_path"])
+        self.policy.eval()
 
     def get_policy_interval(self):
         return self.policy_interval

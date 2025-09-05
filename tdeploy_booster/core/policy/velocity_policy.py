@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from .policy_base import Policy
+from .base_policy import Policy
 
 class VelocityPolicy(Policy):
     def _init_inference_variables(self):
