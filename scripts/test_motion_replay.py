@@ -3,7 +3,7 @@ from booster_robotics_sdk_python import (
     ChannelFactory, RobotMode,
 )
 
-from tdeploy_booster.core.controller.replay_controller import ReplayController
+from tdeployBooster.core.controller.replay_controller import ReplayController
 
 Controller = ReplayController
 

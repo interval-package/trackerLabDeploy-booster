@@ -15,11 +15,11 @@ from booster_robotics_sdk_python import (
     RobotMode,
 )
 
-from tdeploy_booster.core.utils.command import create_prepare_cmd, create_first_frame_rl_cmd
-from tdeploy_booster.core.utils.remote_control_service import RemoteControlService
-from tdeploy_booster.core.utils.rotate import rotate_vector_inverse_rpy
-from tdeploy_booster.core.utils.timer import TimerConfig, Timer
-from tdeploy_booster.core.policy import Policy
+from tdeployBooster.core.utils.command import create_prepare_cmd, create_first_frame_rl_cmd
+from tdeployBooster.core.utils.remote_control_service import RemoteControlService
+from tdeployBooster.core.utils.rotate import rotate_vector_inverse_rpy
+from tdeployBooster.core.utils.timer import TimerConfig, Timer
+from tdeployBooster.core.policy import Policy
 
 
 class Controller:

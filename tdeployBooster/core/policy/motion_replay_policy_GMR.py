@@ -3,7 +3,7 @@ import math
 import numpy as np
 from dataclasses import dataclass
 
-from tdeploy_booster.basic.joint_names.booster_k1 import MUJOCO2REAL_CAST
+# from tdeployBooster.basic.joint_names.booster_k1 import MUJOCO2REAL_CAST
 from .base_policy import Policy
 
 @dataclass
@@ -52,12 +52,13 @@ class GMRMotionData:
         tar_dof_pos = tar_dof_pos.reshape(-1)
         return tar_dof_pos # [MUJOCO2REAL_CAST]
     
-motion_data = np.ones(500, 22) * 0.1
+motion_data = np.ones((500, 22)) * 0.1
 
 class MotionReplayPolicy(Policy):
     
     def __init__(self, cfg):
-        super().__init__(cfg)
+        # super().__init__(cfg)
+        self.cfg = cfg
         self.reset()
         # self.data = GMRMotionData.from_file("./target.pkl")
         self.data = GMRMotionData.from_list(motion_data)
