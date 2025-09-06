@@ -21,6 +21,7 @@ from tdeployBooster.core.utils.rotate import rotate_vector_inverse_rpy
 from tdeployBooster.core.utils.timer import TimerConfig, Timer
 from tdeployBooster.core.policy import Policy
 
+B1JointCnt = 22
 
 class Controller:
     def __init__(self, cfg_file) -> None:
@@ -31,6 +32,8 @@ class Controller:
         # Load config
         with open(cfg_file, "r", encoding="utf-8") as f:
             self.cfg = yaml.load(f.read(), Loader=yaml.FullLoader)
+
+        self._init_policy()
 
         # Initialize components
         self.remoteControlService = RemoteControlService()

@@ -22,7 +22,7 @@ class ReplayController(Controller):
 
         logit = self.policy.inference()
         assert logit.shape[0] == 22 , "Shape unpair."
-        self.dof_target[:] = logit
+        self.dof_target[:22] = logit
 
         inference_time = time.perf_counter()
         self.logger.debug(f"Inference took {(inference_time - start_time)*1000:.4f} ms")

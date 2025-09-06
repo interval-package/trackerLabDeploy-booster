@@ -46,7 +46,7 @@ class GMRMotionData:
         
     def dof_pos_at_time(self, time: float):
         frame = time * self.fps
-        idx_l, idx_u = math.min(math.floor(frame), self.length), math.min(math.ceil(frame), self.length)
+        idx_l, idx_u = min(math.floor(frame), self.length), min(math.ceil(frame), self.length)
         blend = frame - idx_l
         tar_dof_pos:np.ndarray = self.dof_poses[idx_l] * blend + self.dof_poses[idx_u] * (1 - blend)
         tar_dof_pos = tar_dof_pos.reshape(-1)
@@ -57,8 +57,9 @@ motion_data = np.ones((500, 22)) * 0.1
 class MotionReplayPolicy(Policy):
     
     def __init__(self, cfg):
-        # super().__init__(cfg)
-        self.cfg = cfg
+        super().__init__(cfg)
+
+    def load_policy(self):
         self.reset()
         # self.data = GMRMotionData.from_file("./target.pkl")
         self.data = GMRMotionData.from_list(motion_data)
