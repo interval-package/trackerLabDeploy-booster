@@ -6,6 +6,10 @@ from tdeployBooster.core.policy.motion_replay_policy_GMR import MotionReplayPoli
 class ReplayController(Controller):
     
     policy: MotionReplayPolicy
+    
+    def _init_policy(self):
+        self.policy = MotionReplayPolicy(cfg=self.cfg)
+    
     def run(self):
         time_now = self.timer.get_time()
         if time_now < self.next_inference_time:

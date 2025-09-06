@@ -5,6 +5,10 @@ from tdeployBooster.core.policy.velocity_policy import VelocityPolicy
 class VelocityController(Controller):
     
     policy: VelocityPolicy
+    
+    def _init_policy(self):
+        self.policy = VelocityPolicy(cfg=self.cfg)
+    
     def run(self):
         time_now = self.timer.get_time()
         if time_now < self.next_inference_time:

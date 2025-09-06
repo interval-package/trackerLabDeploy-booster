@@ -34,7 +34,6 @@ class Controller:
 
         # Initialize components
         self.remoteControlService = RemoteControlService()
-        self.policy = Policy(cfg=self.cfg)
 
         self._init_timer()
         self._init_low_state_values()
@@ -43,6 +42,9 @@ class Controller:
         self.running = True
 
         self.publish_lock = threading.Lock()
+        
+    def _init_policy(self):
+        self.policy = Policy(cfg=self.cfg)
         
     def _init_timer(self):
         self.timer = Timer(TimerConfig(time_step=self.cfg["common"]["dt"]))
