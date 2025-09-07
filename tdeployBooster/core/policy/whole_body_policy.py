@@ -6,7 +6,6 @@ from tdeployBooster.core.controller.base_controller import Controller
 from deploylib.deploy_manager import DeployManager
 
 from deploylib.deploy_manager import DeployManager, MotionBufferCfg
-from deploylib.utils.configs import get_lab_joint_names
 
 from tdeployBooster.basic.joint_names.booster_k1 import LAB_JOINT_NAMES, MUJOCO2LAB_CAST, LAB2MUJOCO_CAST
 from tdeployBooster.basic.motion_align.booster_k1 import K1_MOTION_ALIGN_CFG
@@ -32,10 +31,8 @@ class WholeBodyPolicy(Policy):
         
         cfg = MotionBufferCfg(
             regen_pkl=False,
-            motion=MotionBufferCfg.MotionCfg(
-                motion_type="yaml",
-                motion_name="amass/booster_k1/deploy.yaml"
-            )
+            motion_type="yaml",
+            motion_name="amass/booster_k1/deploy.yaml"
         )
         
         self.manager = DeployManager(
