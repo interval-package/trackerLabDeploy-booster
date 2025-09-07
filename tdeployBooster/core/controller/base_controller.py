@@ -28,6 +28,7 @@ class Controller:
         # Setup logging
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
+        self.joint_cnt = 22
 
         # Load config
         with open(cfg_file, "r", encoding="utf-8") as f:
@@ -57,12 +58,12 @@ class Controller:
     def _init_low_state_values(self):
         self.base_ang_vel = np.zeros(3, dtype=np.float32)
         self.projected_gravity = np.zeros(3, dtype=np.float32)
-        self.dof_pos = np.zeros(B1JointCnt, dtype=np.float32)
-        self.dof_vel = np.zeros(B1JointCnt, dtype=np.float32)
+        self.dof_pos = np.zeros(self.joint_cnt, dtype=np.float32)
+        self.dof_vel = np.zeros(self.joint_cnt, dtype=np.float32)
 
-        self.dof_target = np.zeros(B1JointCnt, dtype=np.float32)
-        self.filtered_dof_target = np.zeros(B1JointCnt, dtype=np.float32)
-        self.dof_pos_latest = np.zeros(B1JointCnt, dtype=np.float32)
+        self.dof_target = np.zeros(self.joint_cnt, dtype=np.float32)
+        self.filtered_dof_target = np.zeros(self.joint_cnt, dtype=np.float32)
+        self.dof_pos_latest = np.zeros(self.joint_cnt, dtype=np.float32)
         
     def _init_communication(self) -> None:
         try:
@@ -119,7 +120,7 @@ class Controller:
             time.sleep(0.1)
         start_time = time.perf_counter()
         create_prepare_cmd(self.low_cmd, self.cfg)
-        for i in range(B1JointCnt):
+        for i in range(self.joint_cnt):
             self.dof_target[i] = self.low_cmd.motor_cmd[i].q
             self.filtered_dof_target[i] = self.low_cmd.motor_cmd[i].q
         self._send_cmd(self.low_cmd)
@@ -158,7 +159,7 @@ class Controller:
 
             self.filtered_dof_target = self.filtered_dof_target * 0.8 + self.dof_target * 0.2
 
-            for i in range(B1JointCnt):
+            for i in range(self.joint_cnt):
                 self.low_cmd.motor_cmd[i].q = self.filtered_dof_target[i]
 
             # Use series-parallel conversion for torque to avoid non-linearity
