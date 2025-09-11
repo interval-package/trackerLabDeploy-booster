@@ -21,7 +21,7 @@ class GMRMotionData:
     
     @property
     def length(self):
-        return self.dof_poses.shape[0]
+        return self.dof_poses.shape[0] - 1
     
     @classmethod
     def from_file(cls, file_path: str):
@@ -61,8 +61,8 @@ class MotionReplayPolicy(Policy):
 
     def load_policy(self):
         self.reset()
-        # self.data = GMRMotionData.from_file("./target.pkl")
-        self.data = GMRMotionData.from_list(motion_data)
+        self.data = GMRMotionData.from_file("/home/booster/Workspace/whc_25/trackerLab/data/retargeted/GMR/booster_k1/35_01_stageii.pkl")
+        # self.data = GMRMotionData.from_list(motion_data)
         
     def reset(self):
         self.curr_time = 0
@@ -70,7 +70,7 @@ class MotionReplayPolicy(Policy):
     def update(self):
         self.curr_time += self.policy_interval
         if self.curr_time > self.data.max_time:
-            self.curr_time = self.data.max_time
+            self.curr_time = 0 # self.data.max_time
     
     def inference(self, **kwargs):
         dof_pos = self.data.dof_pos_at_time(self.curr_time)

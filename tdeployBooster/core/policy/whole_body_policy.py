@@ -10,12 +10,22 @@ from deploylib.deploy_manager import DeployManager, MotionBufferCfg
 from tdeployBooster.basic.joint_names.booster_k1 import LAB_JOINT_NAMES, MUJOCO2LAB_CAST, LAB2MUJOCO_CAST
 from tdeployBooster.basic.motion_align.booster_k1 import K1_MOTION_ALIGN_CFG
 
+default_qpos = [
+    0.0,  0.0,
+    0.25, -1.4, 0.0, -0.5,
+    0.25, 1.4, 0.0, 0.5,
+    -0.1, 0.0, 0.0, 0.2, -0.1, 0.0,
+    -0.1, 0.0, 0.0, 0.2, -0.1, 0.0,
+]
+default_qpos = np.array(default_qpos)
+
 class WholeBodyPolicy(Policy):
     
     def __init__(self, cfg):
+        self.device = "cpu"
         super().__init__(cfg)
         self.obs_base_repeat = 5
-        self.device = "cpu"
+
         
         self.obs_scales = [
             0.25,
@@ -24,6 +34,8 @@ class WholeBodyPolicy(Policy):
             0.05,
             1.0
         ]
+
+        self.obs = None
             
     def _init_inference_variables(self):
         super()._init_inference_variables()
@@ -31,8 +43,9 @@ class WholeBodyPolicy(Policy):
         
         cfg = MotionBufferCfg(
             regen_pkl=False,
-            motion_type="yaml",
-            motion_name="amass/booster_k1/deploy.yaml"
+            motion_type="GMR",
+            motion_name="amass/booster_k1/deploy.yaml",
+            motion_lib_type="MotionLibDofPos"
         )
         
         self.manager = DeployManager(
@@ -55,8 +68,8 @@ class WholeBodyPolicy(Policy):
     def construct_obs(self, cli: Controller):
 
         motions_terms = [
-            self.manager.loc_dof_pos,
-            self.manager.loc_root_vel,
+            self.manager.loc_dof_pos.reshape(-1),
+            self.manager.loc_root_vel.reshape(-1),
         ]
 
         base_terms = [
@@ -68,9 +81,10 @@ class WholeBodyPolicy(Policy):
         ]
         
         base_terms = [ term * fac for term, fac in zip(base_terms, self.obs_scales)]
-        base_terms = [ np.concat([term] * self.obs_base_repeat, axis=-1) for term in base_terms]
-        
-        self.obs[:] = np.concat(motions_terms + base_terms, axis=-1)
+        # base_terms = [ np.concatenate([term] * self.obs_base_repeat, axis=-1) for term in base_terms]
+
+        self.obs = np.concatenate(motions_terms + base_terms, axis=-1).reshape(-1)
+        return self.obs
     
     def inference(self, cli: Controller, **kwargs):
         # Construct Obs
@@ -79,12 +93,18 @@ class WholeBodyPolicy(Policy):
         
         self.actions[:] = self.policy(torch.from_numpy(self.obs).unsqueeze(0)).detach().numpy()
         
+        # self.actions *= 0
+        # self.actions[:] = self.actions
+
         self.actions[:] = np.clip(
             self.actions,
             -self.cfg["policy"]["normalization"]["clip_actions"],
             self.cfg["policy"]["normalization"]["clip_actions"],
         )
-        self.dof_targets[:] = self.default_dof_pos
-        self.dof_targets[:] += self.action_scale * self.actions[LAB2MUJOCO_CAST]
+        # self.dof_targets[:] = self.default_dof_pos
+        self.dof_targets[:22] = self.actions[LAB2MUJOCO_CAST]  * self.action_scale
+
+        # self.dof_targets[3] = default_qpos[3]
+        # self.dof_targets[7] = default_qpos[7]
         
-        return
+        return self.dof_targets

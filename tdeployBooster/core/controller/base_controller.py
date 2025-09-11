@@ -157,7 +157,8 @@ class Controller:
             self.next_publish_time += self.cfg["common"]["dt"]
             self.logger.debug(f"Next publish time: {self.next_publish_time}")
 
-            self.filtered_dof_target = self.filtered_dof_target * 0.8 + self.dof_target * 0.2
+            # self.filtered_dof_target = self.filtered_dof_target * 0.1 + self.dof_target * 0.9
+            self.filtered_dof_target = self.dof_target
 
             for i in range(self.joint_cnt):
                 self.low_cmd.motor_cmd[i].q = self.filtered_dof_target[i]

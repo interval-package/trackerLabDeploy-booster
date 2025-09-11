@@ -20,7 +20,7 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", default="temp", type=str, help="Name of the configuration file.")
+    parser.add_argument("--config", default="deploy.yaml", type=str, help="Name of the configuration file.")
     parser.add_argument("--net", type=str, default="127.0.0.1", help="Network interface for SDK communication.")
     args = parser.parse_args()
     cfg_file = os.path.join("configs", args.config)
